@@ -9,14 +9,21 @@
 import UIKit
 
 class TodoListViewController: UITableViewController {
-
-   var itemArray = ["Study CS", "Get iOS Job", "Start Business"]
     
+    var itemArray = ["Study CS", "Get iOS Job", "Start Business"]
+    
+    let defaults = UserDefaults.standard
     
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        // this saves the new todos array for each time the app launches on load
+        if let items = defaults.array(forKey: "TodoListArray") as? [String] {
+            itemArray = items
+            
+        }
         
     }
     
@@ -74,6 +81,8 @@ class TodoListViewController: UITableViewController {
             
             self.itemArray.append(textField.text!)
             
+            // save new todo to userdefaults which allows to save data for persistance
+            self.defaults.set(self.itemArray, forKey: "TodoListArray")
             
             //need this to reload the tableview after appending item! 
             self.tableView.reloadData()
