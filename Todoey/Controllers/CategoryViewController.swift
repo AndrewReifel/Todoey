@@ -9,63 +9,65 @@
 import UIKit
 import CoreData
 
-class CategoryViewController: UITableViewController {
 
-    var categoryArray = [Category]()
+class CategoryViewController: UITableViewController {
+    
+    var categories = [Category]()
     
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+    
+    
+    
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        print(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))
-        
         loadCategories()
         
+        
     }
     
-    //MARK: - TableView Datasource Methods
+    //MARK: TableView Datasource Methods
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return categoryArray.count
+        return categories.count
     }
     
-    // setup for returning the categoryArray into each cell of the table view. CAN REUSE THIS FOR OTHER APPS
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
-        let category = categoryArray[indexPath.row]
-        
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "CategoryCell", for: indexPath)
         
-        cell.textLabel?.text = category.name
+        cell.textLabel?.text = categories[indexPath.row].name
         
         return cell
         
+        
     }
     
     
+    //MARK: Data manipulation methods
     
-    //MARK: - Data Manipulation Methods
-    
-    func saveCategories() {
+    func saveCategories(){
         
         do {
             try context.save()
-        } catch {
+        }
+        catch {
             print("Error saving category \(error)")
         }
         
-        //need this to reload the tableview after appending item!
-        self.tableView.reloadData()
+        tableView.reloadData()
+        
     }
     
-    func loadCategories(with request: NSFetchRequest<Category> = Category.fetchRequest()) {
-        
+    func loadCategories(){
+        let request : NSFetchRequest<Category> = Category.fetchRequest()
         do {
-            categoryArray = try context.fetch(request)
-        } catch {
-            print("Error fetching data from context \(error)")
+            categories = try context.fetch(request)
+        }
+        catch {
+            print("Error at loading categories \(error)")
         }
         
         tableView.reloadData()
@@ -73,44 +75,57 @@ class CategoryViewController: UITableViewController {
     }
     
     
-    //MARK: - Add New Categories
     
-    
-    
+    //MARK: Add New Categories
     @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
-    
+        
         var textField = UITextField()
         
         let alert = UIAlertController(title: "Add New Category", message: "", preferredStyle: .alert)
-        
-        let action = UIAlertAction(title: "Add category", style: .default) { (action) in
-            //what will happen once the user clicks the Add Item button on our UI Alert
+        let action = UIAlertAction(title: "Add", style: .default) { (action) in
             
             let newCategory = Category(context: self.context)
             newCategory.name = textField.text!
-            self.categoryArray.append(newCategory)
-            
+            self.categories.append(newCategory)
             self.saveCategories()
             
         }
         
-        alert.addTextField { (alertTextField) in
-            alertTextField.placeholder = "Add a new category"
-            textField = alertTextField
-            print(alertTextField.text!)
+        alert.addAction(action)
+        alert.addTextField { (field) in
+            textField = field
+            textField.placeholder = "Add a new category"
         }
         
-        alert.addAction(action)
+        present(alert,animated:  true,completion: nil)
         
-        present(alert, animated: true, completion: nil)
+        
+        
         
     }
     
-
+    //MARK: TableView Datasource Methods
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        performSegue(withIdentifier: "goToItems", sender: self)
+        
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let destinationVC = segue.destination as! TodoListViewController
+        
+        if let indexPath = tableView.indexPathForSelectedRow {
+            destinationVC.selectedCategory = categories[indexPath.row]
+        }
+        
+        
+    }
     
     
-    //MARK: - TableView Delegate Methods
-    //leave this for now do other marks
+    //MARK: TableView Delegate Methods
+    
+    
+    //MARK: Data Manipulation Methods
     
     
 }
