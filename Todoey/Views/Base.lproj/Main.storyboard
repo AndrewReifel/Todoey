@@ -42,12 +42,14 @@
                     </tableView>
                     <navigationItem key="navigationItem" title="Items" id="2Zo-6W-lSg">
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="usG-DK-Kdj">
-                            <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <connections>
                                 <action selector="addButtonPressed:" destination="b03-Fr-nGS" id="iT4-8F-TZj"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
+                    <connections>
+                        <outlet property="searchBar" destination="jrJ-ZY-0wR" id="mZf-su-zKQ"/>
+                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="OV8-mt-C22" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
